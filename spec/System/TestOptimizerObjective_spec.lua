@@ -59,6 +59,7 @@ describe("TestOptimizerObjective", function()
 		assert.are.equals("table", type(result.stages.midgame))
 		assert.are.equals(82, result.stages.earlyMaps.selection.level)
 		assert.truthy(result.stages.earlyMaps.penalty <= 1)
+		assert.are.equals("selfHit", result.stages.earlyMaps.subscores.delivery)
 	end)
 
 	it("measures a smaller four link DPS on a six link build", function()

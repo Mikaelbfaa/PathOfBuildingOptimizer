@@ -18,6 +18,7 @@ local subscoreLabels = {
 	chaosRes = "chaos resistance",
 	gearAgnostic = "gear independent damage",
 	linkRatio = "four link damage retention",
+	bossUptime = "boss damage uptime",
 }
 
 -- Builds human readable reasons from an evaluation result: failed hard
@@ -32,6 +33,12 @@ local function buildReasons(result)
 	end
 	if worstPenalty < 1 then
 		table.insert(reasons, string.format("Score multiplied by %.2f for failed league start constraints", worstPenalty))
+	end
+	for _, stage in pairs(result.stages or { }) do
+		if stage.subscores and stage.subscores.delivery == "melee" then
+			table.insert(reasons, "Melee delivery: boss DPS discounted for real world uptime")
+			break
+		end
 	end
 	if not result.constraints.uniques.pass then
 		table.insert(reasons, "Uses " .. result.constraints.uniques.count .. " unique items, above the league start allowance")

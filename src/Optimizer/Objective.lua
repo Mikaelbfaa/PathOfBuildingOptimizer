@@ -23,18 +23,24 @@ objective.defaults = {
 	constraintPenalty = 0.5,
 	stages = { "earlyMaps", "midgame" },
 	damageFloor = 50000, damageCeiling = 2000000,
+	-- Effective boss uptime by damage delivery. PoB DPS assumes perfect
+	-- uptime; melee must disengage for boss mechanics while totems, minions,
+	-- traps and mines keep dealing damage during movement. These are the
+	-- first uptime factors from docs/research/poe-fundamentals.md 5.5.
+	uptimeFactors = { melee = 0.65, selfHit = 0.85, decoupled = 1.0 },
 	maxHitFloor = 3000, maxHitCeiling = 15000,
 	ehpFloor = 15000, ehpCeiling = 80000,
 	recoveryCap = 0.30,
 	weights = {
-		damage = 0.20,
+		damage = 0.15,
 		maxHit = 0.15,
 		ehp = 0.10,
 		recovery = 0.10,
 		resistances = 0.10,
 		chaosRes = 0.05,
 		gearAgnostic = 0.15,
-		linkRatio = 0.15,
+		linkRatio = 0.10,
+		bossUptime = 0.10,
 	},
 }
 
@@ -340,9 +346,29 @@ function objective.checkConstraints(build, options)
 	}
 end
 
+-- Classifies how the main skill delivers damage: "decoupled" delivery keeps
+-- dealing damage while the player repositions (totems, traps, mines,
+-- minions), "melee" requires staying in melee range of the boss, and
+-- "selfHit" covers everything else the player aims and lands personally
+function objective.classifyDelivery(build)
+	local mainSkill = build.calcsTab.mainEnv and build.calcsTab.mainEnv.player.mainSkill
+	if not mainSkill then
+		return "selfHit"
+	end
+	local flags = mainSkill.skillFlags or { }
+	if flags.totem or flags.trap or flags.mine or mainSkill.minion then
+		return "decoupled"
+	end
+	if flags.melee then
+		return "melee"
+	end
+	return "selfHit"
+end
+
 -- Computes the weighted subscores from the current calc output
 function objective.computeSubscores(build, linkDelta, weaponIndependence, options)
 	local output = build.calcsTab.mainOutput
+	local delivery = objective.classifyDelivery(build)
 	local combinedDPS = getStat(output, "CombinedDPS")
 	local pool = math.max((output.Life or 0) + (output.EnergyShield or 0), 1)
 	local lifeRegen = output.NetLifeRegen or output.LifeRegenRecovery or output.LifeRegen or 0
@@ -362,6 +388,8 @@ function objective.computeSubscores(build, linkDelta, weaponIndependence, option
 		chaosRes = clamp(((output.ChaosResist or -60) + 60) / 135, 0, 1),
 		gearAgnostic = weaponIndependence or 0,
 		linkRatio = linkDelta and linkDelta.ratio or 0,
+		bossUptime = options.uptimeFactors[delivery] or 1,
+		delivery = delivery,
 	}
 end
 
