@@ -18,7 +18,7 @@ Practical rule for the optimizer: treat numbers as patch-volatile and structure 
 
 Structural changes an optimizer must know:
 
-1. **Socket colours are largely gone (3.29).** All sockets roll white by default and accept any gem colour; matching colour only grants +10% gem quality. Off-colour socketing is no longer a constraint.
+1. **Socket colours are largely gone (3.29).** All sockets roll white by default and accept any gem colour; matching colour grants +10% gem quality. Off-colour socketing is no longer a hard constraint, but colour matching remains a soft optimization objective worth +10% quality.
 2. **Awakened support gems retired (3.28).** Replaced by 40+ "Exceptional Support" gems (max level 3, transformative effects, dropped from Atlas bosses with the Originator Voidstone). Only Awakened Empower/Enlighten/Enhance remain.
 3. **Atlas rebuilt (3.28).** Start in the centre, four quadrants, tiered map drops, 138 Atlas passive points, Nightmare Maps (former T17) and Originator Maps (T16.5), fourth Voidstone from the Incarnations.
 4. **Mana cost model changed (3.29).** "Reduced mana cost" became "Mana Cost Efficiency" with hyperbolic diminishing returns (100% efficiency is about half cost, 200% about a third). Zero-cost stacking is gone; mana is a binding constraint again.
@@ -39,14 +39,14 @@ Seven base classes positioned at different start points on a shared passive tree
 | Shadow | Assassin, Trickster, Saboteur | Assassin: crit. Trickster: ES/evasion hybrid recovery. Saboteur: traps/mines, classic low-budget engine |
 | Witch | Necromancer, Elementalist, Occultist | Necro: the minion class. Elementalist: golems, ailments, exposure, guaranteed shock. Occultist: ES, chaos, curses, Profane Bloom |
 | Templar | Inquisitor, Hierophant, Guardian | Inquisitor: crit that ignores res, consecrated ground (an RF class historically, not in the current meta). Hierophant: totems and mana. Guardian: auras, minion hybrid |
-| Scion | Ascendant, Reliquarian, Luminary | Ascendant: weakened versions of two other ascendancies. Reliquarian: rotating unique-item notables. Luminary: permanent mercenary ally |
+| Scion | Ascendant, Reliquarian, Luminary | Ascendant: weakened versions of two other ascendancies. Reliquarian: rotating unique-item notables. Luminary: permanently hires up to 3 equippable mercenary allies |
 
 **Ascendancy points: 8 total** (2 per Labyrinth: Normal, Cruel, Merciless, Eternal). One ascendancy notable is often worth 5-15 regular tree points and several effects are unobtainable elsewhere. Ascendancy choice is the single highest-leverage build decision.
 
 ### 2.2 Passive skill tree
 
-- About 1300 nodes; **123 points max** (99 from levels, 24 from quests).
-- Node types: small passives (pathing and attribute supply), notables (cluster payoff), keystones (rule-changers with drawbacks, see 6.7), masteries (one option per cluster type after allocating a notable there; each option once globally; a hidden 15-20 points of value that naive optimizers miss), jewel sockets (about 21).
+- About 1300 nodes; **123 points for most characters** (99 from levels, 23 from quests, 1 from killing all bandits). Scion Ascendant and Reliquarian ascendancy nodes grant extra passive points, so treat the total as class-dependent data (PoB computes 99 + 23 + ExtraPoints), not a constant.
+- Node types: small passives (pathing and attribute supply), notables (cluster payoff), keystones (rule-changers with drawbacks, see 6.7), masteries (allocatable once any passive in that group is taken, not specifically the notable; each mastery option can be chosen only once globally; a hidden 15-20 points of value that naive optimizers miss), jewel sockets (about 21).
 - **Cluster jewels** (outer sockets) graft sub-trees: Large (8-12 passives, up to 3 notables, 2 sockets), Medium (4-6, up to 2, 1 socket), Small (2-3, up to 1). Implicit enchant defines the theme and notable pool.
 - **Timeless jewels** rewrite every passive in radius by seed; a combinatorial space of its own and a frequent source of build-defining power.
 - **Anointments** (amulet, Blight oils) grant any notable free, often replacing 5-7 points of travel.
@@ -93,7 +93,7 @@ Seven base classes positioned at different start points on a shared passive tree
 - Labyrinth four times for the 8 ascendancy points plus helmet enchants.
 - The campaign is its own optimization problem: no 6-links, no ascendancy for 30 levels, no budget. League-start viability means functioning on a 4-link with self-found rares.
 - Endgame: maps T1-16 (white 1-5, yellow 6-10, red 11-16), Nightmare and Originator maps above that, 4 Voidstones from pinnacle bosses, 138 Atlas passives (a farming-strategy layer mostly orthogonal to character build).
-- Pinnacle ladder, roughly easiest to hardest: map bosses, Guardians, Shaper/Elder, Sirus, Maven, Exarch/Eater, Uber Elder, then Uber versions (about 10x effective life, reduced ailment and curse effect on them) unlocked by Atlas keystones.
+- Pinnacle ladder, roughly easiest to hardest: map bosses, Guardians, Shaper/Elder, Sirus, Maven, Exarch/Eater, Uber Elder, then Uber versions (70% less damage taken on top of higher base life, roughly a 3-5x effective-life step, plus reduced ailment and curse effect on them) unlocked by Atlas keystones.
 
 ## 3. Anatomy of a build
 
@@ -142,19 +142,19 @@ Pools: Life (str-aligned), Energy Shield (int-aligned, recharges after 2s withou
 
 Avoidance:
 - Evasion: attacks only, entropy-based, 95% cap, downgrades crits; useless vs spells and DoT.
-- Block: attack and spell block, 75% cap each (78 with max-block mods). Glancing Blows doubles chance but blocked hits deal about 65% damage.
-- **Spell suppression: 100% cap, halves all spell hit damage. The most point-efficient defensive stat in the game**; near-mandatory for evasion/life builds. Rolls on dex-base gear suffixes.
+- Block: attack and spell block, 75% base cap each, raisable via plus-maximum-block sources (78 is a typical budget ceiling; the engine hard cap is 90). Glancing Blows doubles chance but blocked hits deal about 65% damage.
+- **Spell suppression: 100% cap, prevents 40% of spell hit damage and suppressed ailments (nerfed from 50% in patch 3.27)**. Still very point-efficient and standard on evasion/life builds, but no longer the strictly dominant defensive stat that pre-3.27 guides describe. Rolls on dex-base gear suffixes.
 - Ailment avoidance: target 100%; freeze and shock are the lethal ones.
 
 Mitigation:
 - Resistances: 75% cap, raisable to 90 via max-res sources. Each +1% max res above 75 is worth about 4% EHP vs that element. Chaos res is separate and commonly neglected.
-- Armour: PDR = A / (A + 5D), 90% cap. Rule of thumb: armour 5x the hit gives 33% reduction, 10x gives 50%. Excellent vs many small hits, near-useless vs one huge hit; must be modelled per hit size, never as a flat percent.
+- Armour: PDR = A / (A + 5D), 90% cap. Rule of thumb: armour 5x the hit gives 50% reduction, 10x gives about 67%, 15x gives 75% (this matches the engine, src/Modules/CalcDefence.lua; older wiki pages quote a stale A/(A+10D) version). Excellent vs many small hits, near-useless vs one huge hit; must be modelled per hit size, never as a flat percent.
 - Additional flat PDR (endurance charges, Basalt) subtracts after armour, so it is strongest exactly where armour is weakest.
 - Damage shifting (Lightning Coil, Taste of Hate, Cloak of Flame): converts incoming phys to elemental so capped res mitigates it.
 - Guard skills: Molten Shell (armour-scaled absorb), Steelskin, Immortal Call; usually automated via Cast when Damage Taken or left-click.
 
 Recovery:
-- Leech (capped 20% of life per second by default; Slayer overleech; Vaal Pact doubles cap, removes regen), regen (never interrupted), recoup (over 4s), life gain on hit (instant), ES recharge (out-of-combat), recovery on block (instant).
+- Leech (capped 20% of life per second by default; Slayer overleech; Vaal Pact makes melee life leech instant but prevents every other form of life recovery and does not raise the leech cap, unlike the old reworked version quoted by legacy guides), regen (never interrupted), recoup (over 4s), life gain on hit (instant), ES recharge (out-of-combat), recovery on block (instant).
 - **Recovery must be redundant**: map mods disable leech, regen or flasks individually. One recovery mechanism means death to a map mod.
 
 **DoT/degen is the gap in every plan**: it bypasses evasion, armour, suppression, block and most guard skills. Only res, max res, less-DoT-taken, regen and movement counter it. Hit survivability and DoT survivability must be scored as separate axes.
@@ -177,7 +177,7 @@ Movement speed (maps per hour and a defence), clear vs single target (see 5.6), 
 - **Totems/traps/mines**: player-decoupled damage, safe, very low gear dependency, best-in-class starters. Structural weakness: you do not hit, so no leech and no on-hit/on-kill effects; defence must come from elsewhere.
 - **Righteous Fire**: burn scales on your own max life/ES, fire res overcap and DoT multi; sustain loop with fire res regen mastery. Built on Chieftain in the modern game. Gear dependency low. Weakness: low single-target ceiling (needs a second skill), fixed AoE, recovery map mods.
 - **Channelling** (Winter Orb, Cyclone, Scorching Ray): stage-based ramp, snapshot supports. Weakness: movement lock, ramp.
-- **Triggers** (CoC, Manaforged, item triggers): decouple DPS from input, near-100% uptime while moving; constraint: 162ms per-spell-name cooldown, crit/speed floors. Gear dependency moderate-high.
+- **Triggers** (CoC, Manaforged, item triggers): decouple DPS from input, near-100% uptime while moving; constraint: 150ms base cooldown per triggered skill (about 165ms effective after 33ms server-tick rounding), crit/speed floors. Gear dependency moderate-high.
 - **Aura/attribute/armour stackers**: convert one stacked number into everything; highest ceiling, lowest budget viability, killed by single nerfs.
 
 ## 5. What makes a build strong (community evaluation)
@@ -196,7 +196,7 @@ The community taxonomy is mapper vs boss-killer vs all-rounder, crossed with bud
 
 ### 5.2 DPS thresholds (soft, inflation-prone; do not hard-code)
 
-Order-of-magnitude priors, in PoB full-buff terms: yellow maps 50-150k; red maps and Guardians 100-500k; normal pinnacles 250k-3M; Uber-tier 5M+ (comfortable 10-20M). More reliable framing: time-to-kill against the boss's damage output; ubers have about 10x normal pinnacle life. Repeated community rule: about 5M PoB DPS minimum for a squishy build, about 1M acceptable for a genuinely tanky one (an implied 5x defence-to-DPS exchange rate).
+Order-of-magnitude priors, in PoB full-buff terms: yellow maps 50-150k; red maps and Guardians 100-500k; normal pinnacles 250k-3M; Uber-tier 5M+ (comfortable 10-20M). More reliable framing: time-to-kill against the boss's damage output; ubers take 70% less damage on top of higher base life (roughly a 3-5x effective-life step over normal pinnacles, per the engine's Uber config). Repeated community rule: about 5M PoB DPS minimum for a squishy build, about 1M acceptable for a genuinely tanky one (an implied 5x defence-to-DPS exchange rate).
 
 ### 5.3 Defensive thresholds (reliable)
 
@@ -236,7 +236,7 @@ Effective reservation = base / (1 + efficiency). Aura selection is bin-packing o
 Hyperbolic; high-cast-rate builds face a real mana wall; Praxis, leech, Clarity and Arcane Surge rose in value.
 
 ### 7.3 Enemy-side multipliers (the most underrated lever)
-- Shock: increased damage taken (20% default, 50%+ scaled), applies to all damage. A guaranteed shock equals a support gem.
+- Shock: increased damage taken (15% default, 5% minimum, hard-capped at 50%; effect scaling applies before the cap), applies to all damage. A guaranteed shock equals a support gem.
 - Curses: 1 by default, minus-res curses and Despair; Doom for self-cast. **Pinnacle bosses take 66% less hex effect; Marks are exempt**, which is why boss setups use Marks.
 - Exposure: flat minus-res, additive with curses; same-type sources do not stack.
 - Penetration: applied last per hit; partially redundant with res-lowering, do not double-count.

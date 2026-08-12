@@ -16,8 +16,8 @@ Consolidated from guide authors' own definitions: a build that finishes the camp
 2. **Legal, continuous gem chain from level 1**: every gem obtainable from quest reward or vendor at or below the required level. Gates: Act 3 Library (Siosa, about level 31) unlocks all gems requiring level 31 or less; Transfigured gems require Labyrinth runs; some builds swap main skill at defined milestones.
 3. **Functions on a 4-link** with a defined 4L support set. A 6-link or Tabula is not assumable.
 4. **Defensive gates**: about 75% elemental res at level 68 entering maps; by red maps 75% res plus at least 30% chaos res plus one avoidance layer plus one recovery layer.
-5. **Transition respec cost within the free quest refund budget** (about 20-24 points across ten acts), or explicitly priced (1 Regret per point, 5 per ascendancy point; a full archetype swap costs 80+ Regrets).
-6. Attribute requirements satisfiable. (Socket colours ceased to be a constraint in 3.29.)
+5. **Transition respec cost priced honestly.** Since 3.25 passives are respecced with gold at Faustus in Kingsmarch (core since 3.26); cost scales with level and is cheap during the campaign, so mid-campaign archetype swaps are no longer cost-gated. Quests grant 20 refund points and Orbs of Regret (1 per point, 5 per ascendancy point) remain the fallback; the old "80+ Regrets for a full swap" framing is legacy. Whether gold respec extends to ascendancy points is unverified; treat ascendancy changes as Regret-priced.
+6. Attribute requirements satisfiable. (3.29 made socket colour a soft objective rather than a hard constraint: any gem fits any socket, but a colour match grants +10% gem quality.)
 
 ### 2.2 Weighted objective terms
 
@@ -37,7 +37,7 @@ Consolidated from guide authors' own definitions: a build that finishes the camp
 
 ### 2.3 Player segmentation
 
-Tier lists split by operator skill: simple defensive builds (RF, Stormburst Totems, Absolution) for newer players; higher-APM efficient builds (Slams, Winter Orb, Static Strike) for experienced racers. Selection is also goal-conditioned (mapping, bossing, minions, league mechanic).
+Tier lists split by operator skill: simple low-APM builds (RF, Winter Orb, Stormburst Totems, Absolution) for newer players; higher-APM efficient builds (Slams, Static Strike) for experienced racers. Selection is also goal-conditioned (mapping, bossing, minions, league mechanic).
 
 ### 2.4 The validation standard
 
@@ -50,15 +50,15 @@ The empirical proof creators use: clear a T11 red map deathless at about level 6
 | Righteous Fire (Chieftain) | degen scales on own life/ES, fire res overcap, gem level; zero aiming | safest beginner pick; needs a secondary single-target skill. Built on Chieftain in the modern game; Inquisitor RF is an outdated variant |
 | Essence Drain / Contagion | chaos DoT from gem level; Contagion chain-spreads on death | recovery from ED; CI/block endgame |
 | Toxic Rain | pod DoT from gem level; avoids needing an expensive weapon | strong SSF |
-| Boneshatter / Slams | cheap gambled 2H sets the damage floor; huge defensive floor | nerf-resilient "old faithful"; campaign speed S-tier |
+| Boneshatter / Slams | cheap gambled 2H sets the damage floor; huge defensive floor | nerf-resilient "old faithful" (no 3.29 gem change); praised for campaign speed, though Maxroll ranks the Juggernaut version B-tier in 3.29 |
 | Explosive Arrow Ballista | fuses plus gem level; bow nearly irrelevant; totems tank | ballista support nerfed in 3.29 |
 | Poison SRS / minions | minion gem levels; player is support | 3.29 buffed (minions no longer pause while attacking) |
-| Winter Orb | channel-and-forget, auto-targeting | about +80% damage in 3.29; textbook numeric-buff tier jump |
+| Winter Orb | channel-and-forget, auto-targeting | 3.29: projectiles 1 to 2-3, crit 6 to 7.5, 25% freeze chance, small base damage bump; roughly a 1.7x practical damage step per community PoB tests (the widely quoted "+80%" has no primary source); textbook buff-driven tier jump |
 | Detonate Dead | one-button, corpse damage independent of gear | flat in 3.29 |
-| Hexblast Mines | big damage, low gear | was a top starter in past leagues but is no longer strong in the current meta; piano playstyle, penalized for starters |
+| Hexblast Mines | big damage, low gear | was a top starter in past leagues but is no longer strong in the current meta. Note the cause: Hexblast itself was buffed in 3.29 (1s cooldown, 0.85s cast) while the mine delivery was nerfed, a clean example of why delivery deltas must be computed multiplicatively; piano playstyle, penalized for starters |
 | Lightning Arrow / TS Deadeye | classic transition starter | gated by bow quality; C-tier in 3.29 |
 
-3.29 tier snapshot (Maxroll league-starter list, Aug 2026): S-tier Winter Orb (Elementalist), Kinetic Fusillade Ballista (Hierophant), Smite of Divine Judgement (Inquisitor), Poison Ranged Animate Weapons (Necromancer), Storm Burst of Repulsion Totem (Hierophant), Luminary (Scion). Note the disagreement signal: another expert list marks Luminary "avoid" for unproven mechanics, a genuine hype-vs-proven risk split.
+3.29 tier snapshot (Maxroll league-starter list, Aug 2026): S-tier Winter Orb (Elementalist), Kinetic Fusillade Ballista (Hierophant), Smite of Divine Judgement (Inquisitor), Poison Ranged Animate Weapons (Necromancer), Storm Burst of Repulsion Totem (Hierophant), Luminary (Scion). Note the disagreement signal: another expert list marks Luminary "avoid" for unproven mechanics, a genuine hype-vs-proven risk split (Maxroll itself lists Luminary with the guide still unpublished). Caution on tier labels: Maxroll's list only covers builds that have Maxroll guides, so tier claims for archetypes absent from it (Toxic Rain, Righteous Fire, Detonate Dead, Hexblast, Absolution) come from lower-trust aggregator sources and should always be labelled with their source.
 
 ## 4. League start progression structure
 
@@ -68,14 +68,14 @@ The empirical proof creators use: clear a T11 red map deathless at about level 6
 - Act 3 Library (about level 31): the big gem unlock and the most common transition gate.
 - Act 5 Kitava: minus 30% all res; target 105% uncapped beforehand. Act 10 Kitava: another minus 30%.
 - Cruel Lab around level 45-50, Merciless around 60 (unlocks Transfigured swaps), Eternal in maps.
-- Act 9-10: farm Blood Aqueducts to about level 62 (the universal XP/currency checkpoint), maps at 68.
-- Universal rules: life flask upgrades, stay within 6 levels of zone, avoid map mods hostile to the build's damage type.
+- Act 9-10: Blood Aqueducts to about level 62 is the standard optional catch-up spot when under-levelled or under-linked; current 3.29 routing treats it as optional, not a mandatory stop. Maps at 68.
+- Universal rules: life flask upgrades, stay within 6 levels of zone, avoid map mods hostile to the build's damage type. Since 3.29 a Crafting Bench is available in every town from Act 2 onward, making life/res/attribute fixes cheap without a hideout trip.
 
 ### 4.2 Transition gates (four canonical shapes)
 
 1. Act 3 Library swap (level about 31): level with fire spells or generic attacks, buy the real skill after Fixture of Fate.
 2. Level 28 mechanic swap (for example Spellslinger for ED/C).
-3. Post-Merciless-Lab Transfigured gem swap (for example Sunder into Boneshatter of Complex Trauma, about 18 respec points, deliberately under the free refund budget).
+3. Transfigured gem swap at the Divine Font, available from Normal Lab (about level 33) onward, not only post-Merciless; Lab difficulty just sets the number of options offered (Normal 2, Cruel 3, Merciless 4). Example: Sunder into Boneshatter of Complex Trauma, about 18 respec points.
 4. Level 68 map entry: introduce cheap enabler items.
 
 ### 4.3 Ascendancy ordering
@@ -84,7 +84,7 @@ First points solve the current campaign bottleneck (clear speed or survivability
 
 ### 4.4 Budget ladder shape
 
-no uniques, then a sub-5c enabler unique, then the one 10-50c damage-multiplier unique, then a multi-divine defensive keystone item, then fractured-base crafted rares. Crafting routes for starters: essences, alteration spam, bench, fractured bases (not Harvest/Synthesis endgame routes; note 3.29 removed rare Synthesis crafting).
+no uniques, then a sub-5c enabler unique, then the one 10-50c damage-multiplier unique, then a multi-divine defensive keystone item, then fractured-base crafted rares. Crafting routes for starters: essences, alteration spam, bench, fractured bases (not Harvest/Synthesis endgame routes; note 3.29 removed the Harvest Synthesise craft and non-unique Synthesised item acquisition, and changed Fractured Fossils to fracture one modifier instead of duplicating the item, so fractured-base economics shifted). 3.29 also added default bench crafts to reroll rares (3 Chaos for all modifiers, 8 Chaos for one).
 
 ### 4.5 Time milestones (community consensus)
 
@@ -94,12 +94,12 @@ Campaign 6-10 hours at a competent pace (4-6 for racers); first Atlas objectives
 
 Signal taxonomy extracted from 3.29 analysis:
 
-1. **Direct numeric gem deltas produce tier jumps.** Winter Orb about +80% went S-tier on every list; Elemental Hit minus 17% dropped tiers.
+1. **Direct gem deltas produce tier jumps.** Winter Orb's projectile buff (1 to 2-3, roughly 1.7x in practice) went S-tier on every list; Elemental Hit minus 17% added damage dropped it down lists (the Slayer version still holds A-tier, so the drop is soft).
 2. **Support-gem deltas hit whole archetypes** (Spell Totem and mine support nerfs). Experts route around the delivery method, and the net effect of skill-buff-plus-delivery-nerf requires simulation, not additive reasoning (Kinetic Fusillade stayed S-tier despite its delivery nerf).
 3. **Delivery-method audit procedure**: check what delivers your skill (totem, mine, trigger, self-cast); verify item sources still exist; recalculate mana (3.29 lightning spells cast faster but cost more); note removed crafting routes as build-killers.
 4. **Constraint-removal buffs raise every build's floor** (the 3.29 socket rework), disproportionately helping builds that had the removed problem.
 5. **Buffed-but-unpopular is the value pick**: unpriced items, a full league before nerfs.
-6. **Risk classes**: historically nerf-targeted archetypes and anything with dominant ladder share carry a discount (a support gem at 13% usage was reworked out the next patch).
+6. **Risk classes**: historically nerf-targeted archetypes and anything with dominant ladder share carry a discount (Minion Pact was reworked into Communion Support the patch after it dominated; GGG published no usage figure, so treat any specific percentage circulating for it as unsourced).
 7. **Epistemic humility**: experts leave builds unranked on insufficient information and treat pre-launch reads as provisional; GGG has hotfix-nerfed metas mid-week-1.
 
 ## 6. How experts optimize an existing PoB (the review checklist)
@@ -128,9 +128,9 @@ Supports not actually linked; CWDT level above linked gem requirements; res paci
 |---|---|---|
 | poe.ninja economy API | public, documented (poe.ninja/docs/api) | item/currency prices for budget tiers |
 | poe.ninja builds API | internal, explicitly off-limits | do not depend on it |
-| GGG official APIs (ladder, character, public stash) | public/OAuth, developer docs | sanctioned build and economy data |
+| GGG official APIs (leagues, character, public stash) | public/OAuth, developer docs; note new OAuth application registration is currently closed, so OAuth-gated endpoints may be unavailable; Leagues and Public Stashes need no OAuth | sanctioned build and economy data |
 | pobb.in | open source (Dav1dde/pasteofexile); raw XML per paste | creator build distribution channel |
-| pobarchives.com | about 7300 curated builds, filters for leaguestarter/trending/author; this repo already has a provider class | seed corpus |
+| pobarchives.com | over 20,000 archived builds, about 3,760 tagged League Starter (the widely quoted 7300 figure is from the author's March 2024 announcement); filters for leaguestarter/trending/author; this repo already has a provider class | seed corpus |
 | poedb.tw | datamined tables | gem progressions, quest rewards, mod pools |
 | Maxroll league-starter tier list and guides | web | expert labels for validation |
 
