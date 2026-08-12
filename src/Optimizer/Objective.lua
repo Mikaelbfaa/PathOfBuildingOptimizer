@@ -31,16 +31,21 @@ objective.defaults = {
 	maxHitFloor = 3000, maxHitCeiling = 15000,
 	ehpFloor = 15000, ehpCeiling = 80000,
 	recoveryCap = 0.30,
+	-- Bands for the endgame damage ceiling, measured on the build's own
+	-- late stage gear rather than the self found templates
+	ceilingFloor = 500000, ceilingCeiling = 50000000,
 	weights = {
-		damage = 0.15,
-		maxHit = 0.15,
-		ehp = 0.10,
-		recovery = 0.10,
-		resistances = 0.10,
+		damage = 0.12,
+		maxHit = 0.13,
+		ehp = 0.08,
+		recovery = 0.08,
+		resistances = 0.09,
 		chaosRes = 0.05,
-		gearAgnostic = 0.15,
-		linkRatio = 0.10,
-		bossUptime = 0.10,
+		gearAgnostic = 0.13,
+		linkRatio = 0.09,
+		bossUptime = 0.09,
+		clearCoverage = 0.09,
+		damageCeiling = 0.05,
 	},
 }
 
@@ -56,6 +61,14 @@ objective.stages = {
 		name = "midgame",
 		level = 90,
 		keywords = { "midgame", "mid game", "mid" },
+	},
+	-- Only used for the damage ceiling measurement; aspirational setups are
+	-- exactly what it wants to see
+	ceiling = {
+		name = "ceiling",
+		level = 95,
+		keywords = { "aspirational", "mirror", "min-max", "minmax", "endgame", "end game", "late" },
+		allowExcluded = true,
 	},
 }
 
@@ -102,7 +115,7 @@ function objective.chooseStageCandidate(candidates, stageDef)
 	local anyValid = false
 	for _, cand in ipairs(candidates) do
 		local title = (cand.title or ""):lower()
-		if isExcludedTitle(title) then
+		if isExcludedTitle(title) and not stageDef.allowExcluded then
 			goto continue
 		end
 		anyValid = true
@@ -353,6 +366,39 @@ function objective.checkConstraints(build, options)
 	}
 end
 
+-- Measures the endgame damage ceiling: switches the build to its best late
+-- stage setup (aspirational and mirror tier trees are allowed here, that is
+-- the point) with the build's own gear and reads combined DPS. Run this
+-- before the league start stages so template gear does not leak in.
+function objective.measureDamageCeiling(build, options)
+	local config = dofile("Optimizer/Config.lua")
+	local selection = objective.selectProgressionStage(build, objective.stages.ceiling)
+	if selection.noStageData then
+		return nil
+	end
+	config.normalizeConfig(build, { enemy = options.enemy, keepInputs = options.trustConfig })
+	local dps = getStat(build.calcsTab.mainOutput, "CombinedDPS")
+	return { dps = dps, selection = selection }
+end
+
+-- Scores how well the main skill covers packs while clearing: projectile
+-- count, chain, pierce and area of effect. Minion builds get a fixed prior
+-- because their clear lives in the minions' own skills, which the main
+-- player output does not describe.
+function objective.computeClearCoverage(build)
+	local mainSkill = build.calcsTab.mainEnv and build.calcsTab.mainEnv.player.mainSkill
+	if mainSkill and mainSkill.minion then
+		return 0.6
+	end
+	local output = build.calcsTab.mainOutput
+	local projectiles = (output.ProjectileCount or 1) - 1
+	local chains = math.min(output.ChainMax or 0, 3)
+	local pierces = math.min(output.PierceCount or 0, 3)
+	local projScore = math.min((projectiles + chains + pierces) / 6, 1)
+	local aoeScore = math.min((output.AreaOfEffectRadiusMetres or 0) / 3, 1)
+	return math.max(projScore, aoeScore)
+end
+
 -- Classifies how the main skill delivers damage: "decoupled" delivery keeps
 -- dealing damage while the player repositions (totems, traps, mines,
 -- minions), "melee" requires staying in melee range of the boss, and
@@ -373,7 +419,7 @@ function objective.classifyDelivery(build)
 end
 
 -- Computes the weighted subscores from the current calc output
-function objective.computeSubscores(build, linkDelta, weaponIndependence, options)
+function objective.computeSubscores(build, linkDelta, weaponIndependence, ceilingScore, options)
 	local output = build.calcsTab.mainOutput
 	local delivery = objective.classifyDelivery(build)
 	local combinedDPS = getStat(output, "CombinedDPS")
@@ -396,6 +442,8 @@ function objective.computeSubscores(build, linkDelta, weaponIndependence, option
 		gearAgnostic = weaponIndependence or 0,
 		linkRatio = linkDelta and linkDelta.ratio or 0,
 		bossUptime = options.uptimeFactors[delivery] or 1,
+		clearCoverage = objective.computeClearCoverage(build),
+		damageCeiling = ceilingScore or 0,
 		delivery = delivery,
 	}
 end
@@ -415,6 +463,8 @@ function objective.evaluateLeagueStart(build, options)
 		end
 	end
 	local config = dofile("Optimizer/Config.lua")
+	local ceiling = objective.measureDamageCeiling(build, options)
+	local ceilingScore = ceiling and logScore(ceiling.dps, options.ceilingFloor, options.ceilingCeiling) or 0
 	local stageResults = { }
 	local totalScore = 0
 	local scoredStages = 0
@@ -434,7 +484,7 @@ function objective.evaluateLeagueStart(build, options)
 			local linkDelta = objective.measureLinkDelta(build)
 			local weaponIndependence = objective.measureWeaponIndependence(build)
 			local constraints = objective.checkConstraints(build, options)
-			local subscores = objective.computeSubscores(build, linkDelta, weaponIndependence, options)
+			local subscores = objective.computeSubscores(build, linkDelta, weaponIndependence, ceilingScore, options)
 			local rawScore = 0
 			for key, weight in pairs(options.weights) do
 				rawScore = rawScore + weight * (subscores[key] or 0)
@@ -475,6 +525,7 @@ function objective.evaluateLeagueStart(build, options)
 		constraints = firstScored.constraints,
 		linkDelta = firstScored.linkDelta,
 		replacedGear = firstScored.replacedGear,
+		ceiling = ceiling,
 		stages = stageResults,
 		stageOrder = options.stages,
 	}
