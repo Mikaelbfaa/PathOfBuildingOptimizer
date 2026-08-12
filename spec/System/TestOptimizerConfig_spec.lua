@@ -23,6 +23,18 @@ describe("TestOptimizerConfig", function()
 		assert.are.equals("Alira", loadedBuild.configTab.input.bandit)
 	end)
 
+	it("keeps authored inputs in trusted mode", function()
+		local loadedBuild = harness.loadBuildFile("../spec/TestBuilds/3.13/Mirage Archer Toxic Rain.xml")
+		loadedBuild.configTab.input.customMods = "+500 to maximum Life"
+		loadedBuild.configTab:BuildModList()
+		harness.recalc()
+		local boostedLife = loadedBuild.calcsTab.mainOutput.Life
+		local stripped = config.normalizeConfig(loadedBuild, { keepInputs = true })
+		assert.is_nil(stripped.customMods)
+		assert.are.equals("+500 to maximum Life", loadedBuild.configTab.input.customMods)
+		assert.are.equals(boostedLife, loadedBuild.calcsTab.mainOutput.Life)
+	end)
+
 	it("sets the enemy benchmark", function()
 		local loadedBuild = harness.loadBuildFile("../spec/TestBuilds/3.13/Mirage Archer Toxic Rain.xml")
 		config.normalizeConfig(loadedBuild, { enemy = "Uber" })

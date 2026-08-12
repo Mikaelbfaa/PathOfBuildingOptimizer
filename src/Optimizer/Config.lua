@@ -21,32 +21,36 @@ local preservedVars = {
 -- Resets every non preserved config input to its default value, disables all
 -- custom modifier blocks, and optionally sets the enemy benchmark through
 -- options.enemy (None, Boss, Pinnacle or Uber; the default is Pinnacle).
+-- With options.keepInputs the toggles and custom mods are kept as authored,
+-- for builds from trusted sources, and only the enemy benchmark is applied.
 -- Returns a table of the stripped inputs for reporting.
 function config.normalizeConfig(build, options)
 	options = options or { }
 	local configTab = build.configTab
 	local stripped = { }
-	local varNames = { }
-	for var in pairs(configTab.input) do
-		table.insert(varNames, var)
-	end
-	for _, var in ipairs(varNames) do
-		if not preservedVars[var] then
-			local value = configTab.input[var]
-			local default = configTab:GetDefaultState(var, type(value))
-			if value ~= default then
-				stripped[var] = value
-				configTab.input[var] = default
+	if not options.keepInputs then
+		local varNames = { }
+		for var in pairs(configTab.input) do
+			table.insert(varNames, var)
+		end
+		for _, var in ipairs(varNames) do
+			if not preservedVars[var] then
+				local value = configTab.input[var]
+				local default = configTab:GetDefaultState(var, type(value))
+				if value ~= default then
+					stripped[var] = value
+					configTab.input[var] = default
+				end
 			end
 		end
-	end
-	local configSet = configTab.configSets[configTab.activeConfigSetId]
-	if configSet.customModsList then
-		for _, block in ipairs(configSet.customModsList) do
-			if block.enabled ~= false and block.text and #block.text > 0 then
-				stripped.customModsList = stripped.customModsList or { }
-				table.insert(stripped.customModsList, block.text)
-				block.enabled = false
+		local configSet = configTab.configSets[configTab.activeConfigSetId]
+		if configSet.customModsList then
+			for _, block in ipairs(configSet.customModsList) do
+				if block.enabled ~= false and block.text and #block.text > 0 then
+					stripped.customModsList = stripped.customModsList or { }
+					table.insert(stripped.customModsList, block.text)
+					block.enabled = false
+				end
 			end
 		end
 	end

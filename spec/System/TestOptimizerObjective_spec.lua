@@ -3,6 +3,35 @@ describe("TestOptimizerObjective", function()
 	local objective = dofile("Optimizer/Objective.lua")
 	local report = dofile("Optimizer/Report.lua")
 
+	it("chooses stage candidates by title keywords and level evidence", function()
+		local earlyMaps = objective.stages.earlyMaps
+		local chosen = objective.chooseStageCandidate({
+			{ key = 1, title = "Campaign", points = 60 },
+			{ key = 2, title = "Entering Maps", points = 100 },
+			{ key = 3, title = "Endgame", points = 120 },
+		}, earlyMaps)
+		assert.are.equals(2, chosen.key)
+		chosen = objective.chooseStageCandidate({
+			{ key = 1, title = "Early lvl 96", points = 118 },
+			{ key = 2, title = "Entering Maps", points = 100 },
+		}, earlyMaps)
+		assert.are.equals(2, chosen.key)
+		chosen = objective.chooseStageCandidate({
+			{ key = 1, title = "Level 12", points = 14 },
+			{ key = 2, title = "Early Game", points = 85 },
+			{ key = 3, title = "Midgame", points = 110 },
+			{ key = 4, title = "Endgame", points = 123 },
+		}, objective.stages.midgame)
+		assert.are.equals(3, chosen.key)
+		chosen = objective.chooseStageCandidate({
+			{ key = 1, title = "Level 12", points = 14 },
+			{ key = 2, title = "Level 67 Merc Lab", points = 85 },
+			{ key = 3, title = "Endgame", points = 120 },
+		}, objective.stages.midgame)
+		assert.are.equals(3, chosen.key)
+		assert.is_nil(objective.chooseStageCandidate({ { key = 1 }, { key = 2 } }, earlyMaps))
+	end)
+
 	it("evaluates a build with the full league start pipeline", function()
 		local loadedBuild = harness.loadBuildFile("../spec/TestBuilds/3.13/Mirage Archer Toxic Rain.xml")
 		local result = objective.evaluateLeagueStart(loadedBuild)
@@ -15,6 +44,10 @@ describe("TestOptimizerObjective", function()
 		assert.are.equals("table", type(result.constraints))
 		assert.are.equals("table", type(result.replacedGear))
 		assert.truthy(result.linkDelta.ratio > 0 and result.linkDelta.ratio <= 1)
+		assert.are.equals("table", type(result.stages.earlyMaps))
+		assert.are.equals("table", type(result.stages.midgame))
+		assert.are.equals(82, result.stages.earlyMaps.selection.level)
+		assert.truthy(result.stages.earlyMaps.penalty <= 1)
 	end)
 
 	it("measures a smaller four link DPS on a six link build", function()

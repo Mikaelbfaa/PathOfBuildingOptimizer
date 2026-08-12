@@ -24,6 +24,15 @@ local subscoreLabels = {
 -- constraints first, then the strongest and weakest subscores
 local function buildReasons(result)
 	local reasons = { }
+	local worstPenalty = 1
+	for _, stage in pairs(result.stages or { }) do
+		if stage.penalty < worstPenalty then
+			worstPenalty = stage.penalty
+		end
+	end
+	if worstPenalty < 1 then
+		table.insert(reasons, string.format("Score multiplied by %.2f for failed league start constraints", worstPenalty))
+	end
 	if not result.constraints.uniques.pass then
 		table.insert(reasons, "Uses " .. result.constraints.uniques.count .. " unique items, above the league start allowance")
 	end
@@ -59,6 +68,10 @@ function report.rankBuilds(paths, options)
 			local ok, entryOrErr = pcall(function()
 				local meta = evaluate.buildReport(loadedBuild).build
 				local result = objective.evaluateLeagueStart(loadedBuild, options)
+				local stageSummary = { }
+				for stageName, stage in pairs(result.stages) do
+					stageSummary[stageName] = { score = stage.score, penalty = stage.penalty, selection = stage.selection }
+				end
 				return {
 					path = path,
 					build = meta,
@@ -66,6 +79,7 @@ function report.rankBuilds(paths, options)
 					subscores = result.subscores,
 					constraints = result.constraints,
 					linkDelta = result.linkDelta,
+					stages = stageSummary,
 					reasons = buildReasons(result),
 				}
 			end)
@@ -85,19 +99,25 @@ function report.rankBuilds(paths, options)
 	return entries
 end
 
--- Command line entry point
+-- Command line entry point. Pass --trust-config before the build paths to
+-- keep each build's own configuration toggles (for trusted guide sources).
 local function main()
 	if not arg[1] then
-		print("Usage: luajit Optimizer/Report.lua <build xml> [more build xmls...]")
+		print("Usage: luajit Optimizer/Report.lua [--trust-config] <build xml> [more build xmls...]")
 		os.exit(1)
+	end
+	local options = { }
+	local paths = { }
+	for index = 1, #arg do
+		if arg[index] == "--trust-config" then
+			options.trustConfig = true
+		else
+			table.insert(paths, arg[index])
+		end
 	end
 	local harness = dofile("Optimizer/Harness.lua")
 	harness.init()
-	local paths = { }
-	for index = 1, #arg do
-		table.insert(paths, arg[index])
-	end
-	local entries = report.rankBuilds(paths)
+	local entries = report.rankBuilds(paths, options)
 	local dkjson = require "dkjson"
 	print(dkjson.encode({ ranking = entries }, { indent = true }))
 end
