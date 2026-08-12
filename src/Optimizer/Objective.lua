@@ -35,16 +35,19 @@ objective.defaults = {
 	-- late stage gear rather than the self found templates
 	ceilingFloor = 500000, ceilingCeiling = 50000000,
 	weights = {
-		damage = 0.12,
-		maxHit = 0.14,
-		ehp = 0.08,
-		recovery = 0.08,
-		resistances = 0.09,
-		chaosRes = 0.05,
-		gearAgnostic = 0.15,
-		linkRatio = 0.12,
-		bossUptime = 0.12,
-		damageCeiling = 0.05,
+		damage = 0.10,
+		maxHit = 0.11,
+		ehp = 0.06,
+		recovery = 0.06,
+		resistances = 0.07,
+		chaosRes = 0.04,
+		gearAgnostic = 0.13,
+		linkRatio = 0.11,
+		bossUptime = 0.11,
+		damageCeiling = 0.04,
+		clearFeel = 0.07,
+		metaMomentum = 0.07,
+		playstyleEase = 0.03,
 	},
 }
 
@@ -432,6 +435,8 @@ function objective.computeSubscores(build, linkDelta, weaponIndependence, ceilin
 	for _, statName in ipairs({ "FireResist", "ColdResist", "LightningResist" }) do
 		resShortfall = resShortfall + math.max(0, 75 - (output[statName] or 0))
 	end
+	local knowledgeModule = dofile("Optimizer/Knowledge.lua")
+	local archetype = knowledgeModule.matchArchetype(build, delivery)
 	return {
 		damage = logScore(combinedDPS, options.damageFloor, options.damageCeiling),
 		maxHit = logScore(output.SecondMinimalMaximumHitTaken, options.maxHitFloor, options.maxHitCeiling),
@@ -442,8 +447,12 @@ function objective.computeSubscores(build, linkDelta, weaponIndependence, ceilin
 		gearAgnostic = weaponIndependence or 0,
 		linkRatio = linkDelta and linkDelta.ratio or 0,
 		bossUptime = options.uptimeFactors[delivery] or 1,
-		damageCeiling = ceilingScore or 0,
+		damageCeiling = ((ceilingScore or 0) + archetype.ceilingTrajectory) / 2,
+		clearFeel = archetype.clearFeel,
+		metaMomentum = knowledgeModule.skillMomentum(build),
+		playstyleEase = archetype.playstyleEase,
 		delivery = delivery,
+		archetype = archetype.name,
 	}
 end
 

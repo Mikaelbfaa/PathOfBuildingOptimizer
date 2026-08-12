@@ -52,6 +52,9 @@ describe("TestOptimizerObjective", function()
 			local value = result.subscores[key]
 			assert.truthy(value >= 0 and value <= 1, key)
 		end
+		assert.truthy(result.subscores.clearFeel > 0)
+		assert.truthy(result.subscores.metaMomentum > 0)
+		assert.truthy(result.subscores.playstyleEase > 0)
 		assert.are.equals("table", type(result.constraints))
 		assert.are.equals("table", type(result.replacedGear))
 		assert.truthy(result.linkDelta.ratio > 0 and result.linkDelta.ratio <= 1)

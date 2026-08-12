@@ -20,6 +20,9 @@ local subscoreLabels = {
 	linkRatio = "four link damage retention",
 	bossUptime = "boss damage uptime",
 	damageCeiling = "endgame damage ceiling",
+	clearFeel = "clear feel (knowledge)",
+	metaMomentum = "meta momentum (knowledge)",
+	playstyleEase = "playstyle ease (knowledge)",
 }
 
 -- Builds human readable reasons from an evaluation result: failed hard
