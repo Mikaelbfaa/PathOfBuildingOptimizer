@@ -114,7 +114,9 @@ function objective.chooseStageCandidate(candidates, stageDef)
 			end
 		end
 		local level = tonumber(title:match("(%d+)"))
-		if level and (level < 1 or level > 100) then
+		if level and (level < 10 or level > 100) then
+			-- Small numbers in titles are stage counters (2 Stone, 4 Stone),
+			-- not character levels
 			level = nil
 		end
 		if not level and cand.points and cand.points > 0 then
