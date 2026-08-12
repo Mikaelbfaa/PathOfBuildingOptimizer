@@ -25,10 +25,13 @@ local function ensureLoaded()
 	end
 end
 
--- Awakened and Plus variant supports carry the base gem's balance changes
--- under the base name, for example Awakened Vicious Projectiles is the
--- Vicious Projectiles entry. Strips the prefix so the league table only
--- needs one entry per support family.
+-- Strips a leading "Awakened " so an unlisted Awakened support can fall back
+-- to its base gem's entry, for example Awakened Vicious Projectiles falls
+-- back to Vicious Projectiles. This is a known partial heuristic: patch
+-- notes usually address the base gem, but an Awakened variant can receive
+-- its own independent change. The direct lookup by full name runs first, so
+-- a curated entry keyed to the full Awakened name always takes precedence
+-- over this fallback.
 local function baseSupportName(name)
 	return name:match("^Awakened (.+)$")
 end
