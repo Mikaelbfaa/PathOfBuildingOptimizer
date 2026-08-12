@@ -36,15 +36,14 @@ objective.defaults = {
 	ceilingFloor = 500000, ceilingCeiling = 50000000,
 	weights = {
 		damage = 0.12,
-		maxHit = 0.13,
+		maxHit = 0.14,
 		ehp = 0.08,
 		recovery = 0.08,
 		resistances = 0.09,
 		chaosRes = 0.05,
-		gearAgnostic = 0.13,
-		linkRatio = 0.09,
-		bossUptime = 0.09,
-		clearCoverage = 0.09,
+		gearAgnostic = 0.15,
+		linkRatio = 0.12,
+		bossUptime = 0.12,
 		damageCeiling = 0.05,
 	},
 }
@@ -382,9 +381,10 @@ function objective.measureDamageCeiling(build, options)
 end
 
 -- Scores how well the main skill covers packs while clearing: projectile
--- count, chain, pierce and area of effect. Minion builds get a fixed prior
--- because their clear lives in the minions' own skills, which the main
--- player output does not describe.
+-- count, chain, pierce and area of effect. Currently unused: validated
+-- against the Maxroll tier benchmark this proxy carried no signal, because
+-- real clear (Contagion spread, explosion chains, lingering ground damage)
+-- is invisible to these outputs. Kept for a future, better clear model.
 function objective.computeClearCoverage(build)
 	local mainSkill = build.calcsTab.mainEnv and build.calcsTab.mainEnv.player.mainSkill
 	if mainSkill and mainSkill.minion then
@@ -442,7 +442,6 @@ function objective.computeSubscores(build, linkDelta, weaponIndependence, ceilin
 		gearAgnostic = weaponIndependence or 0,
 		linkRatio = linkDelta and linkDelta.ratio or 0,
 		bossUptime = options.uptimeFactors[delivery] or 1,
-		clearCoverage = objective.computeClearCoverage(build),
 		damageCeiling = ceilingScore or 0,
 		delivery = delivery,
 	}

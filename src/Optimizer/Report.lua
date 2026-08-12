@@ -19,7 +19,6 @@ local subscoreLabels = {
 	gearAgnostic = "gear independent damage",
 	linkRatio = "four link damage retention",
 	bossUptime = "boss damage uptime",
-	clearCoverage = "clear coverage",
 	damageCeiling = "endgame damage ceiling",
 }
 
