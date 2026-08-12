@@ -34,6 +34,14 @@ describe("TestOptimizerEvaluate", function()
 		assert.truthy(output.Life > lifeBefore)
 	end)
 
+	it("binds a working zlib when the platform provides one", function()
+		harness.init()
+		local deflated = Deflate("optimizer zlib roundtrip test")
+		if deflated and #deflated > 0 then
+			assert.are.equals("optimizer zlib roundtrip test", Inflate(deflated))
+		end
+	end)
+
 	it("encodes a full report as valid JSON", function()
 		local loadedBuild = harness.loadBuildFile("../spec/TestBuilds/3.13/Mirage Archer Toxic Rain.xml")
 		local report = evaluate.buildReport(loadedBuild, true)
