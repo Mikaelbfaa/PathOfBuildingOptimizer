@@ -9,10 +9,15 @@
 local harness = { }
 
 -- Loads the headless wrapper unless the environment is already booted, which
--- is the case when running under busted with HeadlessWrapper.lua as helper
+-- is the case when running under busted with HeadlessWrapper.lua as helper.
+-- Main.lua consumes arg[1] as a build link at startup, so the command line
+-- is hidden during boot to keep script arguments intact.
 function harness.init()
 	if not loadBuildFromXML then
+		local savedArg = arg
+		arg = { }
 		dofile("HeadlessWrapper.lua")
+		arg = savedArg
 	end
 	return build
 end
