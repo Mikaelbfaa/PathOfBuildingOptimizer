@@ -33,12 +33,12 @@ Seven base classes positioned at different start points on a shared passive tree
 
 | Base class | Ascendancies | Archetype pull |
 |---|---|---|
-| Marauder | Juggernaut, Berserker, Chieftain | Jugg: armour/endurance/tank. Berserker: raw more-damage via rage at a defensive cost. Chieftain: fire/totems/regen, very forgiving |
+| Marauder | Juggernaut, Berserker, Chieftain | Jugg: armour/endurance/tank. Berserker: raw more-damage via rage at a defensive cost. Chieftain: fire/totems/regen, very forgiving, the modern Righteous Fire home |
 | Duelist | Slayer, Gladiator, Champion | Slayer: leech/overleech, AoE, culling. Gladiator: block plus bleed. Champion: permanent Fortify, impale, the defensive generalist |
 | Ranger | Warden, Deadeye, Pathfinder | Warden: elemental attacks, tinctures. Deadeye: projectiles/clear speed, frenzy. Pathfinder: flask uptime/effect, poison, ailment immunity |
 | Shadow | Assassin, Trickster, Saboteur | Assassin: crit. Trickster: ES/evasion hybrid recovery. Saboteur: traps/mines, classic low-budget engine |
 | Witch | Necromancer, Elementalist, Occultist | Necro: the minion class. Elementalist: golems, ailments, exposure, guaranteed shock. Occultist: ES, chaos, curses, Profane Bloom |
-| Templar | Inquisitor, Hierophant, Guardian | Inquisitor: crit that ignores res, consecrated ground, the RF home. Hierophant: totems and mana. Guardian: auras, minion hybrid |
+| Templar | Inquisitor, Hierophant, Guardian | Inquisitor: crit that ignores res, consecrated ground (an RF class historically, not in the current meta). Hierophant: totems and mana. Guardian: auras, minion hybrid |
 | Scion | Ascendant, Reliquarian, Luminary | Ascendant: weakened versions of two other ascendancies. Reliquarian: rotating unique-item notables. Luminary: permanent mercenary ally |
 
 **Ascendancy points: 8 total** (2 per Labyrinth: Normal, Cruel, Merciless, Eternal). One ascendancy notable is often worth 5-15 regular tree points and several effects are unobtainable elsewhere. Ascendancy choice is the single highest-leverage build decision.
@@ -175,7 +175,7 @@ Movement speed (maps per hour and a defence), clear vs single target (see 5.6), 
   - Common weaknesses: no burst, ramp time, phase transitions waste stacks.
 - **Minions**: scale on minion gem levels, minion mods, auras; gear dependency low (perennial league starters). Weaknesses: AI, minion deaths, damage uptime, historically nerf-targeted.
 - **Totems/traps/mines**: player-decoupled damage, safe, very low gear dependency, best-in-class starters. Structural weakness: you do not hit, so no leech and no on-hit/on-kill effects; defence must come from elsewhere.
-- **Righteous Fire**: burn scales on your own max life/ES, fire res overcap and DoT multi; sustain loop with fire res regen mastery. Gear dependency low. Weakness: low single-target ceiling (needs a second skill), fixed AoE, recovery map mods.
+- **Righteous Fire**: burn scales on your own max life/ES, fire res overcap and DoT multi; sustain loop with fire res regen mastery. Built on Chieftain in the modern game. Gear dependency low. Weakness: low single-target ceiling (needs a second skill), fixed AoE, recovery map mods.
 - **Channelling** (Winter Orb, Cyclone, Scorching Ray): stage-based ramp, snapshot supports. Weakness: movement lock, ramp.
 - **Triggers** (CoC, Manaforged, item triggers): decouple DPS from input, near-100% uptime while moving; constraint: 162ms per-spell-name cooldown, crit/speed floors. Gear dependency moderate-high.
 - **Aura/attribute/armour stackers**: convert one stacked number into everything; highest ceiling, lowest budget viability, killed by single nerfs.

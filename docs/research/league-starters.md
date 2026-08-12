@@ -47,7 +47,7 @@ The empirical proof creators use: clear a T11 red map deathless at about level 6
 
 | Archetype | Gear-agnostic mechanism | Notes |
 |---|---|---|
-| Righteous Fire | degen scales on own life/ES, fire res overcap, gem level; zero aiming | safest beginner pick; needs a secondary single-target skill |
+| Righteous Fire (Chieftain) | degen scales on own life/ES, fire res overcap, gem level; zero aiming | safest beginner pick; needs a secondary single-target skill. Built on Chieftain in the modern game; Inquisitor RF is an outdated variant |
 | Essence Drain / Contagion | chaos DoT from gem level; Contagion chain-spreads on death | recovery from ED; CI/block endgame |
 | Toxic Rain | pod DoT from gem level; avoids needing an expensive weapon | strong SSF |
 | Boneshatter / Slams | cheap gambled 2H sets the damage floor; huge defensive floor | nerf-resilient "old faithful"; campaign speed S-tier |
@@ -55,7 +55,7 @@ The empirical proof creators use: clear a T11 red map deathless at about level 6
 | Poison SRS / minions | minion gem levels; player is support | 3.29 buffed (minions no longer pause while attacking) |
 | Winter Orb | channel-and-forget, auto-targeting | about +80% damage in 3.29; textbook numeric-buff tier jump |
 | Detonate Dead | one-button, corpse damage independent of gear | flat in 3.29 |
-| Hexblast Mines | big damage, low gear | piano playstyle, penalized for starters |
+| Hexblast Mines | big damage, low gear | was a top starter in past leagues but is no longer strong in the current meta; piano playstyle, penalized for starters |
 | Lightning Arrow / TS Deadeye | classic transition starter | gated by bow quality; C-tier in 3.29 |
 
 3.29 tier snapshot (Maxroll league-starter list, Aug 2026): S-tier Winter Orb (Elementalist), Kinetic Fusillade Ballista (Hierophant), Smite of Divine Judgement (Inquisitor), Poison Ranged Animate Weapons (Necromancer), Storm Burst of Repulsion Totem (Hierophant), Luminary (Scion). Note the disagreement signal: another expert list marks Luminary "avoid" for unproven mechanics, a genuine hype-vs-proven risk split.
@@ -105,7 +105,7 @@ Signal taxonomy extracted from 3.29 analysis:
 ## 6. How experts optimize an existing PoB (the review checklist)
 
 ### 6.1 Defensive review
-Res capped with overcap headroom; chaos res at least 30; suppression 100 where class-appropriate; ailment avoidance 100; guard skill present and automated; the aura triple (Determination, Grace, Defiance Banner) considered; flasks alt-rolled and Instilling-automated; recovery adequate and redundant; armour at least 25k or equivalent layer; endurance charges.
+Res capped with overcap headroom; chaos res at least 30; suppression 100 where class-appropriate; ailment avoidance 100; guard skill present and automated; defensive auras fitted to the build's defence type and reservation budget; flasks alt-rolled and Instilling-automated; recovery adequate and redundant; armour at least 25k or equivalent layer; endurance charges. Caution: the once-standard "aura triple" advice (Determination plus Grace plus Defiance Banner) dates from around patch 3.18 and is no longer current; evergreen guide pages can carry advice that is years stale, so aura recommendations must come from current-league sources.
 
 ### 6.2 Damage review
 Gem levels (21/20, plus-level gear); accuracy 100% for attacks; correct support gems for what the build actually scales (check swaps for real more-multipliers); exposure and curse present; flat damage on rings/amulet for hit builds; crit chance before crit multi; 6-link or plus-2 corrupted gear later.
