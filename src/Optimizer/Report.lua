@@ -55,17 +55,25 @@ function report.rankBuilds(paths, options)
 	for _, path in ipairs(paths) do
 		local loadedBuild, errMsg = harness.loadBuildFile(path)
 		if loadedBuild then
-			local meta = evaluate.buildReport(loadedBuild).build
-			local result = objective.evaluateLeagueStart(loadedBuild, options)
-			table.insert(entries, {
-				path = path,
-				build = meta,
-				score = result.score,
-				subscores = result.subscores,
-				constraints = result.constraints,
-				linkDelta = result.linkDelta,
-				reasons = buildReasons(result),
-			})
+			-- One broken build must not abort the whole ranking run
+			local ok, entryOrErr = pcall(function()
+				local meta = evaluate.buildReport(loadedBuild).build
+				local result = objective.evaluateLeagueStart(loadedBuild, options)
+				return {
+					path = path,
+					build = meta,
+					score = result.score,
+					subscores = result.subscores,
+					constraints = result.constraints,
+					linkDelta = result.linkDelta,
+					reasons = buildReasons(result),
+				}
+			end)
+			if ok then
+				table.insert(entries, entryOrErr)
+			else
+				table.insert(entries, { path = path, error = tostring(entryOrErr) })
+			end
 		else
 			table.insert(entries, { path = path, error = errMsg })
 		end

@@ -35,6 +35,16 @@ function harness.loadBuildFile(path)
 	if not build.spec then
 		return nil, "Build did not load correctly: " .. path
 	end
+	-- Complex builds can need extra frames before the first output exists
+	for _ = 1, 3 do
+		if build.calcsTab and build.calcsTab.mainOutput then
+			break
+		end
+		runCallback("OnFrame")
+	end
+	if not (build.calcsTab and build.calcsTab.mainOutput) then
+		return nil, "Build loaded but produced no calculation output: " .. path
+	end
 	return build
 end
 
