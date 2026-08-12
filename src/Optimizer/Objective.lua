@@ -71,17 +71,35 @@ local function getStat(output, statName)
 	return data.powerStatList.GetFromOutput(output, { stat = statName }, true)
 end
 
+-- Setups that describe post league start wealth; never valid stage picks
+local excludedTitleKeywords = { "aspirational", "mirror", "min-max", "minmax", "min max" }
+
+local function isExcludedTitle(title)
+	for _, keyword in ipairs(excludedTitleKeywords) do
+		if title:find(keyword, 1, true) then
+			return true
+		end
+	end
+	return false
+end
+
 -- Picks the candidate whose title or point count best matches the stage.
--- Candidates are { key, title, points } tables. A title keyword match
--- dominates; ties break on distance between the stage level and the level
--- evidenced by a number in the title or estimated from allocated points
--- (points is roughly level minus 19 once quest points are counted).
--- Returns nil when no candidate offers any signal at all.
+-- Candidates are { key, title, points } tables. Aspirational and mirror
+-- tier setups are excluded outright. A title keyword match dominates; ties
+-- break on distance between the stage level and the level evidenced by a
+-- number in the title or estimated from allocated points (points is roughly
+-- level minus 19 once quest points are counted). Returns nil when no
+-- candidate offers any signal, plus "excluded" when nothing valid remains.
 function objective.chooseStageCandidate(candidates, stageDef)
 	local best, bestRank
 	local anySignal = false
+	local anyValid = false
 	for _, cand in ipairs(candidates) do
 		local title = (cand.title or ""):lower()
+		if isExcludedTitle(title) then
+			goto continue
+		end
+		anyValid = true
 		local kwRank
 		for i, keyword in ipairs(stageDef.keywords) do
 			if title:find(keyword, 1, true) then
@@ -105,6 +123,10 @@ function objective.chooseStageCandidate(candidates, stageDef)
 			bestRank = rank
 			best = cand
 		end
+		::continue::
+	end
+	if not anyValid then
+		return nil, "excluded"
 	end
 	if not anySignal then
 		return nil
@@ -121,10 +143,15 @@ function objective.selectProgressionStage(build, stageDef)
 	for i, spec in ipairs(build.treeTab.specList) do
 		table.insert(specCands, { key = i, title = spec.title, points = spec:CountAllocNodes() })
 	end
-	local chosen = objective.chooseStageCandidate(specCands, stageDef)
+	local chosen, reason = objective.chooseStageCandidate(specCands, stageDef)
 	if chosen then
 		build.treeTab:SetActiveSpec(chosen.key)
 		selection.spec = chosen.title or ("spec " .. chosen.key)
+	elseif reason == "excluded" then
+		-- Only aspirational or mirror tier trees exist; the build carries no
+		-- data for this progression stage and cannot be scored honestly
+		selection.noStageData = true
+		return selection
 	end
 	local itemCands = { }
 	for _, setId in ipairs(build.itemsTab.itemSetOrderList) do
@@ -146,7 +173,9 @@ function objective.selectProgressionStage(build, stageDef)
 	end
 	build.characterLevel = stageDef.level
 	build.characterLevelAutoMode = false
-	build.mainSocketGroup = build.importTab:GuessMainSocketGroup()
+	build.buildFlag = true
+	runCallback("OnFrame")
+	build.mainSocketGroup = objective.guessMainSocketGroupByDPS(build)
 	build.buildFlag = true
 	runCallback("OnFrame")
 	local env = build.calcsTab.mainEnv
@@ -154,6 +183,37 @@ function objective.selectProgressionStage(build, stageDef)
 		selection.mainSkill = env.player.mainSkill.activeEffect.grantedEffect.name
 	end
 	return selection
+end
+
+-- Returns the socket group index with the highest combined DPS when used as
+-- the main group. More reliable than PoB's largest-group guess, which picks
+-- aura or leveling groups on multi-setup guide builds. Skips disabled
+-- groups, weapon swap groups and groups without an enabled active gem.
+function objective.guessMainSocketGroupByDPS(build)
+	local originalGroup = build.mainSocketGroup
+	local bestIndex, bestDPS
+	for index, group in ipairs(build.skillsTab.socketGroupList) do
+		local hasActive = false
+		for _, gemInstance in ipairs(group.gemList) do
+			if gemInstance.gemData and gemInstance.enabled and gemInstance.gemData.grantedEffect
+					and not gemInstance.gemData.grantedEffect.support then
+				hasActive = true
+				break
+			end
+		end
+		if hasActive and group.enabled ~= false and not (group.slot and group.slot:match("Swap")) then
+			build.mainSocketGroup = index
+			build.buildFlag = true
+			runCallback("OnFrame")
+			local dps = getStat(build.calcsTab.mainOutput, "CombinedDPS")
+			if not bestDPS or dps > bestDPS then
+				bestDPS = dps
+				bestIndex = index
+			end
+		end
+	end
+	build.mainSocketGroup = originalGroup
+	return bestIndex or originalGroup
 end
 
 -- Lists the unique items equipped in the active item set
@@ -261,8 +321,11 @@ function objective.checkConstraints(build, options)
 	local gemFlags = objective.listGemFlags(build)
 	local minEleRes = math.min(output.FireResist or 0, output.ColdResist or 0, output.LightningResist or 0)
 	return {
+		-- Cheap uniques are tolerated at league start per expert criteria,
+		-- so the unique list is informational and never fails the build;
+		-- price aware budgeting can tighten this once economy data exists
 		uniques = {
-			pass = #uniques <= options.maxUniques,
+			pass = true,
 			count = #uniques,
 			list = uniques,
 		},
@@ -319,50 +382,64 @@ function objective.evaluateLeagueStart(build, options)
 	local config = dofile("Optimizer/Config.lua")
 	local stageResults = { }
 	local totalScore = 0
-	local avgSubscores = { }
+	local scoredStages = 0
+	local sumSubscores = { }
+	local firstScored
 	for _, stageName in ipairs(options.stages) do
 		local stageDef = objective.stages[stageName]
 		local selection = objective.selectProgressionStage(build, stageDef)
-		local strippedConfig = config.normalizeConfig(build, { enemy = options.enemy, keepInputs = options.trustConfig })
-		local replacedGear
-		if options.ssf then
-			replacedGear = config.applySSFTemplateGear(build)
-		end
-		local linkDelta = objective.measureLinkDelta(build)
-		local weaponIndependence = objective.measureWeaponIndependence(build)
-		local constraints = objective.checkConstraints(build, options)
-		local subscores = objective.computeSubscores(build, linkDelta, weaponIndependence, options)
-		local rawScore = 0
-		for key, weight in pairs(options.weights) do
-			rawScore = rawScore + weight * (subscores[key] or 0)
-			avgSubscores[key] = (avgSubscores[key] or 0) + (subscores[key] or 0) / #options.stages
-		end
-		local penalty = 1
-		for _, constraint in pairs(constraints) do
-			if not constraint.pass then
-				penalty = penalty * options.constraintPenalty
+		if selection.noStageData then
+			stageResults[stageName] = { selection = selection, noStageData = true }
+		else
+			local strippedConfig = config.normalizeConfig(build, { enemy = options.enemy, keepInputs = options.trustConfig })
+			local replacedGear
+			if options.ssf then
+				replacedGear = config.applySSFTemplateGear(build)
 			end
+			local linkDelta = objective.measureLinkDelta(build)
+			local weaponIndependence = objective.measureWeaponIndependence(build)
+			local constraints = objective.checkConstraints(build, options)
+			local subscores = objective.computeSubscores(build, linkDelta, weaponIndependence, options)
+			local rawScore = 0
+			for key, weight in pairs(options.weights) do
+				rawScore = rawScore + weight * (subscores[key] or 0)
+				sumSubscores[key] = (sumSubscores[key] or 0) + (subscores[key] or 0)
+			end
+			local penalty = 1
+			for _, constraint in pairs(constraints) do
+				if not constraint.pass then
+					penalty = penalty * options.constraintPenalty
+				end
+			end
+			stageResults[stageName] = {
+				selection = selection,
+				subscores = subscores,
+				rawScore = rawScore,
+				penalty = penalty,
+				score = rawScore * penalty,
+				constraints = constraints,
+				linkDelta = linkDelta,
+				strippedConfig = strippedConfig,
+				replacedGear = replacedGear,
+			}
+			firstScored = firstScored or stageResults[stageName]
+			totalScore = totalScore + rawScore * penalty
+			scoredStages = scoredStages + 1
 		end
-		stageResults[stageName] = {
-			selection = selection,
-			subscores = subscores,
-			rawScore = rawScore,
-			penalty = penalty,
-			score = rawScore * penalty,
-			constraints = constraints,
-			linkDelta = linkDelta,
-			strippedConfig = strippedConfig,
-			replacedGear = replacedGear,
-		}
-		totalScore = totalScore + rawScore * penalty
 	end
-	local firstStage = stageResults[options.stages[1]]
+	if scoredStages == 0 then
+		return { noStageData = true, stages = stageResults, stageOrder = options.stages }
+	end
+	local avgSubscores = { }
+	for key, sum in pairs(sumSubscores) do
+		avgSubscores[key] = sum / scoredStages
+	end
 	return {
-		score = totalScore / #options.stages,
+		score = totalScore / scoredStages,
 		subscores = avgSubscores,
-		constraints = firstStage.constraints,
-		linkDelta = firstStage.linkDelta,
-		replacedGear = firstStage.replacedGear,
+		constraints = firstScored.constraints,
+		linkDelta = firstScored.linkDelta,
+		replacedGear = firstScored.replacedGear,
 		stages = stageResults,
 		stageOrder = options.stages,
 	}

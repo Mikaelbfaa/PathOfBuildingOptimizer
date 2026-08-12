@@ -68,6 +68,13 @@ function report.rankBuilds(paths, options)
 			local ok, entryOrErr = pcall(function()
 				local meta = evaluate.buildReport(loadedBuild).build
 				local result = objective.evaluateLeagueStart(loadedBuild, options)
+				if result.noStageData then
+					return {
+						path = path,
+						build = meta,
+						error = "No league start stage data: the build only contains aspirational or mirror tier setups",
+					}
+				end
 				local stageSummary = { }
 				for stageName, stage in pairs(result.stages) do
 					stageSummary[stageName] = { score = stage.score, penalty = stage.penalty, selection = stage.selection }

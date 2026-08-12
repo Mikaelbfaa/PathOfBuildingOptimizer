@@ -30,6 +30,17 @@ describe("TestOptimizerObjective", function()
 		}, objective.stages.midgame)
 		assert.are.equals(3, chosen.key)
 		assert.is_nil(objective.chooseStageCandidate({ { key = 1 }, { key = 2 } }, earlyMaps))
+		local excluded, reason = objective.chooseStageCandidate({
+			{ key = 1, title = "Aspirational", points = 123 },
+			{ key = 2, title = "Multi Mirror", points = 123 },
+		}, earlyMaps)
+		assert.is_nil(excluded)
+		assert.are.equals("excluded", reason)
+		chosen = objective.chooseStageCandidate({
+			{ key = 1, title = "Aspirational", points = 123 },
+			{ key = 2, title = "Early Maps", points = 100 },
+		}, earlyMaps)
+		assert.are.equals(2, chosen.key)
 	end)
 
 	it("evaluates a build with the full league start pipeline", function()
