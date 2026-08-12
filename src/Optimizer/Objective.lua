@@ -251,7 +251,9 @@ function objective.listGemFlags(build)
 				if (gemInstance.level or 1) > 20 and not name:match("^Awakened") then
 					table.insert(flags, name .. " is level " .. gemInstance.level .. ", corruption needed")
 				end
-				if (gemInstance.quality or 0) > 20 then
+				-- Since 3.29 a colour matched socket grants 10 quality, so
+				-- 30 quality is reachable at league start with a 20 quality gem
+				if (gemInstance.quality or 0) > 30 then
 					table.insert(flags, name .. " has " .. gemInstance.quality .. " quality")
 				end
 			end
@@ -339,8 +341,11 @@ function objective.checkConstraints(build, options)
 			pass = minEleRes >= 75,
 			minimum = minEleRes,
 		},
+		-- Gem availability flags are warnings, not failures: guides list
+		-- level 21 gems in early setups and those cost a few chaos within
+		-- days of launch, so penalizing them scrambles tier comparisons
 		gems = {
-			pass = #gemFlags == 0,
+			pass = true,
 			flags = gemFlags,
 		},
 	}

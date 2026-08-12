@@ -40,14 +40,20 @@ local function buildReasons(result)
 			break
 		end
 	end
-	if not result.constraints.uniques.pass then
-		table.insert(reasons, "Uses " .. result.constraints.uniques.count .. " unique items, above the league start allowance")
-	end
-	if not result.constraints.resistances.pass then
-		table.insert(reasons, "Lowest elemental resistance is " .. string.format("%.0f", result.constraints.resistances.minimum) .. ", below the 75 cap")
-	end
-	if not result.constraints.gems.pass then
-		table.insert(reasons, "Gems not obtainable at league start: " .. table.concat(result.constraints.gems.flags, "; "))
+	local seen = { }
+	for _, stageName in ipairs(result.stageOrder or { }) do
+		local stage = result.stages and result.stages[stageName]
+		local constraints = stage and stage.constraints
+		if constraints then
+			if not constraints.resistances.pass and not seen.resistances then
+				seen.resistances = true
+				table.insert(reasons, string.format("Lowest elemental resistance is %.0f at %s, below the 75 cap", constraints.resistances.minimum, stageName))
+			end
+			if #constraints.gems.flags > 0 and not seen.gems then
+				seen.gems = true
+				table.insert(reasons, "Warning, gems above day one availability (" .. stageName .. "): " .. table.concat(constraints.gems.flags, "; "))
+			end
+		end
 	end
 	local ordered = { }
 	for key, value in pairs(result.subscores) do
