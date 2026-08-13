@@ -13,6 +13,8 @@
 
 local objective = { }
 
+local knowledgeModule = dofile("Optimizer/Knowledge.lua")
+
 -- Scoring bands and weights. Damage and pool bands are log scaled between
 -- floor and ceiling. Weights sum to one.
 objective.defaults = {
@@ -435,7 +437,6 @@ function objective.computeSubscores(build, linkDelta, weaponIndependence, ceilin
 	for _, statName in ipairs({ "FireResist", "ColdResist", "LightningResist" }) do
 		resShortfall = resShortfall + math.max(0, 75 - (output[statName] or 0))
 	end
-	local knowledgeModule = dofile("Optimizer/Knowledge.lua")
 	local archetype = knowledgeModule.matchArchetype(build, delivery)
 	return {
 		damage = logScore(combinedDPS, options.damageFloor, options.damageCeiling),
