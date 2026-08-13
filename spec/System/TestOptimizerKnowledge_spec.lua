@@ -40,4 +40,27 @@ describe("TestOptimizerKnowledge", function()
 		assert.are.equals(0.5, knowledge.skillMomentum(loadedBuild))
 		knowledge.loadTables(nil, nil)
 	end)
+
+	it("has skills and supports keys in the real league file that all resolve to known gem names", function()
+		harness.init()
+		local knownSkillNames = { }
+		local knownSupportNames = { }
+		for _, gem in pairs(data.gems) do
+			local isSupport = gem.grantedEffect and gem.grantedEffect.support
+			local bucket = isSupport and knownSupportNames or knownSkillNames
+			if gem.name then
+				bucket[gem.name] = true
+			end
+			if gem.grantedEffect and gem.grantedEffect.name then
+				bucket[gem.grantedEffect.name] = true
+			end
+		end
+		local leagueTable = dofile("../knowledge/league-" .. latestTreeVersion .. ".lua")
+		for skillName in pairs(leagueTable.skills) do
+			assert.truthy(knownSkillNames[skillName], "league file skills key is not a known skill gem name: " .. skillName)
+		end
+		for supportName in pairs(leagueTable.supports) do
+			assert.truthy(knownSupportNames[supportName], "league file supports key is not a known support gem name: " .. supportName)
+		end
+	end)
 end)
