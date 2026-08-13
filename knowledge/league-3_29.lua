@@ -22,6 +22,6 @@ return {
 	supports = {
 		["Spell Totem"] = { momentum = 0.30, note = "55-50 percent less, was 49-40" },
 		["Ballista Totem"] = { momentum = 0.35, note = "36-30 percent less, was 32-24" },
-		["Barrage"] = { momentum = 0.75, note = "50-44 percent less, was 68-62, one more projectile" },
+		["Barrage Support"] = { momentum = 0.75, note = "50-44 percent less, was 68-62, one more projectile" },
 	},
 }
