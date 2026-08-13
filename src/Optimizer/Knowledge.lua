@@ -16,7 +16,9 @@ local leagueTable
 -- directory at the repository root.
 function knowledge.loadTables(archetypes, league)
 	archetypeTable = archetypes or dofile("../knowledge/archetypes.lua")
-	leagueTable = league or dofile("../knowledge/league-3_29.lua")
+	-- The league knowledge file is named after the engine's current tree
+	-- version. A file for that version must exist under knowledge/.
+	leagueTable = league or dofile("../knowledge/league-" .. latestTreeVersion .. ".lua")
 end
 
 local function ensureLoaded()
