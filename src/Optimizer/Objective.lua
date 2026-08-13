@@ -36,20 +36,26 @@ objective.defaults = {
 	-- Bands for the endgame damage ceiling, measured on the build's own
 	-- late stage gear rather than the self found templates
 	ceilingFloor = 500000, ceilingCeiling = 50000000,
+	-- Calibrated 2026-08-13 against a three source expert consensus
+	-- (Maxroll tier list, Tytykiller ranked list, community sheet) over the
+	-- 42 build benchmark: Spearman 0.39 vs consensus and positive against
+	-- every source alone. Experts rank starters by structure and trajectory
+	-- (link retention, scaling ceiling, boss uptime, meta momentum), barely
+	-- by raw stat floors, which every curated build satisfies anyway.
 	weights = {
-		damage = 0.10,
-		maxHit = 0.11,
-		ehp = 0.06,
-		recovery = 0.06,
-		resistances = 0.07,
-		chaosRes = 0.04,
-		gearAgnostic = 0.13,
-		linkRatio = 0.11,
-		bossUptime = 0.11,
-		damageCeiling = 0.04,
-		clearFeel = 0.07,
-		metaMomentum = 0.07,
-		playstyleEase = 0.03,
+		damage = 0.01,
+		maxHit = 0.04,
+		ehp = 0.05,
+		recovery = 0.02,
+		resistances = 0.04,
+		chaosRes = 0.03,
+		gearAgnostic = 0.08,
+		linkRatio = 0.20,
+		bossUptime = 0.14,
+		damageCeiling = 0.20,
+		clearFeel = 0.02,
+		metaMomentum = 0.10,
+		playstyleEase = 0.07,
 	},
 }
 
