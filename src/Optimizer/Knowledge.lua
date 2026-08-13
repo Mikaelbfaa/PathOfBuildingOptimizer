@@ -84,7 +84,9 @@ end
 
 -- Meta momentum for the build's main skill, folding in the worst momentum
 -- among its enabled linked supports when any has an entry. A buffed skill
--- on a nerfed delivery is a net loss.
+-- on a nerfed delivery is a net loss. The second return value combines the
+-- curated notes for the skill and the worst support entry with "; " when
+-- both exist, or is nil when neither entry has a note.
 function knowledge.skillMomentum(build)
 	ensureLoaded()
 	local mainSkill = build.calcsTab.mainEnv and build.calcsTab.mainEnv.player.mainSkill
@@ -93,6 +95,7 @@ function knowledge.skillMomentum(build)
 	local momentum = entry and entry.momentum or leagueTable.defaultMomentum
 	local group = build.skillsTab.socketGroupList[build.mainSocketGroup]
 	local supportMomentum
+	local supportNote
 	if group then
 		for _, gemInstance in ipairs(group.gemList) do
 			if gemInstance.enabled and gemInstance.gemData and gemInstance.gemData.grantedEffect
@@ -104,14 +107,21 @@ function knowledge.skillMomentum(build)
 				end
 				if supportEntry and (not supportMomentum or supportEntry.momentum < supportMomentum) then
 					supportMomentum = supportEntry.momentum
+					supportNote = supportEntry.note
 				end
 			end
 		end
 	end
-	if supportMomentum then
-		return (momentum + supportMomentum) / 2
+	local note
+	if entry and entry.note and supportNote then
+		note = entry.note .. "; " .. supportNote
+	else
+		note = (entry and entry.note) or supportNote
 	end
-	return momentum
+	if supportMomentum then
+		return (momentum + supportMomentum) / 2, note
+	end
+	return momentum, note
 end
 
 return knowledge

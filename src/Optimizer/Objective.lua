@@ -438,6 +438,7 @@ function objective.computeSubscores(build, linkDelta, weaponIndependence, ceilin
 		resShortfall = resShortfall + math.max(0, 75 - (output[statName] or 0))
 	end
 	local archetype = knowledgeModule.matchArchetype(build, delivery)
+	local momentum, momentumNote = knowledgeModule.skillMomentum(build)
 	return {
 		damage = logScore(combinedDPS, options.damageFloor, options.damageCeiling),
 		maxHit = logScore(output.SecondMinimalMaximumHitTaken, options.maxHitFloor, options.maxHitCeiling),
@@ -450,10 +451,11 @@ function objective.computeSubscores(build, linkDelta, weaponIndependence, ceilin
 		bossUptime = options.uptimeFactors[delivery] or 1,
 		damageCeiling = ((ceilingScore or 0) + archetype.ceilingTrajectory) / 2,
 		clearFeel = archetype.clearFeel,
-		metaMomentum = knowledgeModule.skillMomentum(build),
+		metaMomentum = momentum,
 		playstyleEase = archetype.playstyleEase,
 		delivery = delivery,
 		archetype = archetype.name,
+		momentumNote = momentumNote,
 	}
 end
 
@@ -515,6 +517,8 @@ function objective.evaluateLeagueStart(build, options)
 				linkDelta = linkDelta,
 				strippedConfig = strippedConfig,
 				replacedGear = replacedGear,
+				archetype = subscores.archetype,
+				momentumNote = subscores.momentumNote,
 			}
 			firstScored = firstScored or stageResults[stageName]
 			totalScore = totalScore + rawScore * penalty

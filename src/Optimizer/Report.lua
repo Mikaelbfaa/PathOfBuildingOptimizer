@@ -94,7 +94,13 @@ function report.rankBuilds(paths, options)
 				end
 				local stageSummary = { }
 				for stageName, stage in pairs(result.stages) do
-					stageSummary[stageName] = { score = stage.score, penalty = stage.penalty, selection = stage.selection }
+					stageSummary[stageName] = {
+						score = stage.score,
+						penalty = stage.penalty,
+						selection = stage.selection,
+						archetype = stage.archetype,
+						momentumNote = stage.momentumNote,
+					}
 				end
 				return {
 					path = path,
